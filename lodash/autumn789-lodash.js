@@ -1,13 +1,26 @@
 var autumn789 = {
   process: function (standard) {
     if (typeof standard == 'function') {
+      // 函数直接返回该函数
       return standard
     } else if (typeof standard == 'object') {
       if (Array.isArray(standard)) {
+        // 数组键值对 [prop, val]，返回判断属性和值是否对应的函数
         return (obj) => {
           return obj[standard[0]] == standard[1]
         }
+      } else {
+        // 对象，返回一个函数，判断obj是否包含所有standard中的键值对
+        return (obj) => {
+          for (let prop in standard) {
+            if (standard[prop] != obj[prop]) return false
+          }
+          return true
+        }
       }
+    } else if (typeof standard == 'string') {
+      // 字符串，属性值，返回函数，判断是否存在该属性
+      return (obj) => standard in obj
     }
   },
   findIndex: function (arr, pred=x=>x, idx=0) {
@@ -241,4 +254,4 @@ var autumn789 = {
   // }
 }
 
-module.exports = autumn789
+// module.exports = autumn789
