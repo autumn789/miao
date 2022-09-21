@@ -512,7 +512,7 @@ var autumn789 = {
     }
     function flatten(temp, d) {
       for (let i=0; i<temp.length; i++) {
-        if (d > 0 && Array.isArray(temp[i])) {
+        if (d && Array.isArray(temp[i])) {
           flatten(temp[i], d-1)
         } else {
           res.push(temp[i])
@@ -521,16 +521,38 @@ var autumn789 = {
     }
     flatten(temp, d)
     return res
+  },
+  groupBy(arr, fn) {
+    let map = {}, trans = this.by(fn)
+    for (let i=0; i<arr.length; i++) {
+      if (!map[trans(arr[i])]) {
+        map[trans(arr[i])] = [arr[i]]
+      } else {
+        map[trans(arr[i])].push(arr[i])
+      }
+    }
+    return map
+  },
+  keyBy(arr, fn) {
+    let res = {}, trans = this.by(fn)
+    for (let i=0; i<arr.length; i++) {
+      res[trans(arr[i])] = arr[i]
+    }
+    return res
+  },
+  map(collection, fn) {
+    res = []
+    for (let key in collection) {
+      res.push(this.by(fn)(collection[key]))
+    }
+    return res
   }
 }
 
 // module.exports = autumn789
-// var users = [
-//   { 'user': 'barney', 'age': 36, 'active': true },
-//   { 'user': 'fred',   'age': 40, 'active': false }
-// ];
-// function duplicate(n) {
-//   return [[[n, n]]];
-// }
-// debugger
-// console.log(autumn789.flatMapDepth([1, 2], duplicate, 2))
+var array = [
+  { 'dir': 'left', 'code': 97 },
+  { 'dir': 'right', 'code': 100 }
+];
+debugger
+console.log(autumn789.map({ 'a': 4, 'b': 8 }, square))
