@@ -546,13 +546,131 @@ var autumn789 = {
       res.push(this.by(fn)(collection[key]))
     }
     return res
-  }
+  },
+  partition(arr, pred) {
+    let res = [[],[]], trans = this.process(pred)
+    for (let i=0; i<arr.length; i++) {
+      if (trans(arr[i])) {
+        res[0].push(arr[i])
+      } else {
+        res[1].push(arr[i])
+      }
+    }
+    return res
+  },
+  reduce(collection, iter, accumulator) {
+    let res = accumulator
+    for (let key in collection) {
+      res = iter(res, collection[key], key)
+    }
+    return res
+  },
+  reduceRight(collection, iter, accumulator) {
+    let res = accumulator
+    for (let i=collection.length-1; i>=0; i--) {
+      res = iter(res, collection[i], i)
+    }
+    return res
+  },
+  reject(collection, pred) {
+    let res = []
+    for (let i=0; i<collection.length; i++) {
+      if (!this.process(pred)(collection[i])) {
+        res.push(collection[i])
+      }
+    }
+    return res
+  },
+  sample(collection) {
+    return collection[Math.random()*collection.length | 0]
+  },
+  shuffle(collection) {
+    let res = [], keys = []
+    for (let key in collection) {
+      keys.push(key)
+    }
+    while (keys.length) {
+      let r = Math.random()*keys.length | 0
+      res.push(collection[keys.splice(r,1)[0]])
+    }
+    return res
+  },
+  size(collection) {
+    if (typeof collection == 'string' || Array.isArray(collection)) {
+      return collection.length
+    } else {
+      let count = 0
+      for (let _ in collection) {
+        count++
+      }
+      return count
+    }
+  },
+  some(collection, pred) {
+    for (let key in collection) {
+      if (this.process(pred)(collection[key])) {
+        return true
+      }
+    }
+    return false
+  },
+  compareForSort(a, b, iterArr) {
+    // a或b是undefined，即左序列或右序列用尽，返回false，否则下面代码会去读undefined的属性
+    if (!a || !b) return false
+    let idx = 0
+    while (idx < iterArr.length) {
+      let trans = this.by(iterArr[idx])
+      if (trans(a) != trans(b)) {
+        // 左小于右，返回true
+        return trans(a) < trans(b)
+      }
+      idx++
+    }
+    // 比不出大小，返回true
+    return true
+  },
+  sortBy(arr, iterArr) {
+    if (arr.length == 1) return arr.slice()
+    let l = 0, r = arr.length, mid = (l+r)/2 | 0,
+    pl = 0, pr = 0, res = [],
+    arrL = this.sortBy(arr.slice(l, mid), iterArr),
+    arrR = this.sortBy(arr.slice(mid, r), iterArr)
+    while (pl<arrL.length || pr<arrR.length) {
+      if (pr == arrR.length || this.compareForSort(arrL[pl], arrR[pr], iterArr)) {
+        res.push(arrL[pl])
+        pl++
+      } else {
+        res.push(arrR[pr])
+        pr++
+      }
+    }
+    return res
+  },
+  forEach(collection, iter) {
+    for (let key in collection) {
+      this.by(iter)(collection[key], key)
+    }
+  },
+  isArray(val) {
+    return Array.isArray(val)
+  },
+  isBoolean(val) {
+    return typeof val == 'boolean'
+  },
+  isDate(val) {
+    return Object.getPrototypeOf(val) == Date.prototype
+  },
+
 }
 
+
 // module.exports = autumn789
-var array = [
-  { 'dir': 'left', 'code': 97 },
-  { 'dir': 'right', 'code': 100 }
+var users = [
+  { 'user': 'fred',   'age': 48 },
+  { 'user': 'barney', 'age': 36 },
+  { 'user': 'fred',   'age': 40 },
+  { 'user': 'barney', 'age': 34 }
 ];
+
 debugger
-console.log(autumn789.map({ 'a': 4, 'b': 8 }, square))
+console.log(autumn789.isDate(new Date))
