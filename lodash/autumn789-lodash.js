@@ -665,12 +665,12 @@ var autumn789 = {
 
 
 // module.exports = autumn789
-var users = [
-  { 'user': 'fred',   'age': 48 },
-  { 'user': 'barney', 'age': 36 },
-  { 'user': 'fred',   'age': 40 },
-  { 'user': 'barney', 'age': 34 }
-];
+// var users = [
+//   { 'user': 'fred',   'age': 48 },
+//   { 'user': 'barney', 'age': 36 },
+//   { 'user': 'fred',   'age': 40 },
+//   { 'user': 'barney', 'age': 34 }
+// ];
 
-debugger
-console.log(autumn789.isDate(new Date))
+// debugger
+// console.log(autumn789.isDate(new Date))
