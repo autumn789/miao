@@ -712,6 +712,8 @@ var autumn789 = {
   isEqual(object, other) {
     let map = new Map()
     function inner(object, other) {
+      // 排除null和对象相对比的情况，因为 typeof null 返回 object
+      if ((!object && other) || (object && !other)) return false
       let type1 = typeof object, type2 = typeof other
       if (type1 != type2) {
         return false
