@@ -585,15 +585,14 @@ var autumn789 = {
     return collection[Math.random()*collection.length | 0]
   },
   shuffle(collection) {
-    let res = [], keys = []
-    for (let key in collection) {
-      keys.push(key)
+    // in-place
+    for (let i=collection.length-1; i>0; i--) {
+      let rand = Math.random()*(i+1)|0
+      let temp = collection[rand]
+      collection[rand] = collection[i]
+      collection[i]= temp
     }
-    while (keys.length) {
-      let r = Math.random()*keys.length | 0
-      res.push(collection[keys.splice(r,1)[0]])
-    }
-    return res
+    return collection
   },
   size(collection) {
     if (typeof collection == 'string' || Array.isArray(collection)) {
@@ -660,17 +659,102 @@ var autumn789 = {
   isDate(val) {
     return Object.getPrototypeOf(val) == Date.prototype
   },
-
+  isMatch(object, source) {
+    for (let key in source) {
+      if (source[key] != object[key]) {
+        return false
+      }
+    }
+    return true
+  },
+  isNaN(val) {
+    return val != val
+  },
+  isNil(value) {
+    return value == null || value == undefined
+  },
+  isNull(value) {
+    return value == null
+  },
+  isNumber(value) {
+    return typeof value == 'number'
+  },
+  cloneDeep(obj) {
+    let map = new Map()
+    function inner(obj) {
+      if (obj && typeof obj == 'object') {
+        if (map.has(obj)) {
+          return map.get(obj)
+        }
+        if (Array.isArray(obj)) {
+          let res = []
+          map.set(obj, res)
+          for (let i=0; i<obj.length; i++) {
+            res[i] = inner(obj[i])
+          }
+          return res
+        } else {
+          // plain object
+          let res = {}
+          map.set(obj, res)
+          for (let prop in obj) {
+            res[prop] = inner(obj[prop])
+          }
+          return res
+        }
+      } else {
+        // 函数、原始类型无法复制，直接返回
+        return obj
+      }
+    }
+    return inner(obj)
+  },
+  isEqual(object, other) {
+    let map = new Map()
+    function inner(object, other) {
+      let type1 = typeof object, type2 = typeof other
+      if (type1 != type2) {
+        return false
+      }
+      if (map.has(object)) {
+        return map.get(object) === other
+      }
+      if (type1=='object' && type2=='object') {
+        map.set(object, other)
+        // map2.set(other, object)
+        let isArray1 = Array.isArray(object), isArray2 = Array.isArray(other)
+        if (isArray1 && isArray2 && object.length==other.length) {
+          for (let i=0; i<object.length; i++) {
+            if (!inner(object[i], other[i])) {
+              return false
+            }
+          }
+          return true
+        } else if (!isArray1 && !isArray2) {
+          for (let prop in object) {
+            if (!inner(object[prop], other[prop])) {
+              return false
+            }
+          }
+          for (let prop in other) {
+            if (!inner(object[prop], other[prop])) {
+              return false
+            }
+          }
+          return true
+        } else {
+          return false
+        }
+      } else {
+        return object === other
+      }
+    }
+    return inner(object, other)
+  }
 }
 
 
 // module.exports = autumn789
-// var users = [
-//   { 'user': 'fred',   'age': 48 },
-//   { 'user': 'barney', 'age': 36 },
-//   { 'user': 'fred',   'age': 40 },
-//   { 'user': 'barney', 'age': 34 }
-// ];
+
 
 // debugger
-// console.log(autumn789.isDate(new Date))
